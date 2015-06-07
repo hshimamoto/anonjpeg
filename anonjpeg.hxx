@@ -17,6 +17,7 @@ class mainwnd : public hWin::wnd {
 public:
 	mainwnd(mainwndcls *c);
 	LRESULT proc(HWND w, UINT m, WPARAM wp, LPARAM lp);
+	void on_create(void);
 };
 
 class mainapp : public hWin::app {

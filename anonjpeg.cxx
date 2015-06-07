@@ -16,12 +16,32 @@ mainwnd::mainwnd(mainwndcls *c) : hWin::wnd(c)
 LRESULT mainwnd::proc(HWND w, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m) {
+	case WM_DROPFILES:
+		{
+			HDROP d = (HDROP)wp;
+			int num = ::DragQueryFile(d, -1, NULL, 0);
+
+			for (int i = 0; i < num; i++) {
+				TCHAR path[MAX_PATH];
+
+				::DragQueryFile(d, i, path, sizeof(path));
+				::MessageBox(w, path, "drop", MB_OK);
+			}
+			::DragFinish(d);
+		}
+		return 0;
 	case WM_DESTROY:
 		::PostQuitMessage(0);
 		return 0;
 	}
 
 	return ::DefWindowProc(w, m, wp, lp);
+}
+
+void mainwnd::on_create(void)
+{
+	// accept drop files
+	::DragAcceptFiles(get(), TRUE);
 }
 
 void mainapp::init(HINST inst, LPTSTR line, int show)
