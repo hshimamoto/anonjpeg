@@ -6,7 +6,21 @@
 
 #include "hwin/hwin.hxx"
 
+#include <iostream>
+#include <fstream>
+#include <list>
+
 namespace anonjpeg {
+
+// EXIF
+class exif {
+	std::ifstream fin;
+	bool valid;
+	std::list<std::ifstream::pos_type> segs;
+public:
+	exif(LPTSTR);
+	virtual ~exif();
+};
 
 class mainwndcls : public hWin::cls {
 public:

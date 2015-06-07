@@ -5,6 +5,26 @@
 
 using namespace anonjpeg;
 
+// EXIF
+exif::exif(LPTSTR path) : fin(path, std::ios::binary)
+{
+	valid = false;
+
+	// check JPEG SOI
+	unsigned short soi;
+
+	fin.read((char *)&soi, sizeof(soi));
+	if (soi != 0xd8ff)
+		return;
+
+	valid = true;
+}
+
+exif::~exif()
+{
+	fin.close();
+}
+
 mainwndcls::mainwndcls()
 {
 }
