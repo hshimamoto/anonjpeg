@@ -44,20 +44,44 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 		fin.seekg(size - 2, std::ios_base::cur);
 	}
 
-	unsigned short sos;
-
-	fin.read((char *)&sos, sizeof(soi));
-	if (sos != 0xdaff)
-		return;
-
+	fin.seekg(-2, std::ios_base::cur);
 	datap = fin.tellg();
 
 	valid = true;
+
+	::MessageBox(NULL, "valid", "info", MB_OK);
 }
 
 exif::~exif()
 {
 	fin.close();
+}
+
+void exif::save(LPTSTR path)
+{
+	if (!valid)
+		return;
+
+	unsigned short soi;
+
+	soi = 0xd8ff;
+
+	std::ofstream fout(path, std::ios::binary);
+	fout.write((char *)&soi, sizeof(soi));
+
+	// move fin to SOS
+	fin.seekg(datap);
+
+	while (!fin.eof()) {
+		unsigned short data;
+
+		fin.read((char *)&data, sizeof(data));
+		fout.write((char *)&data, sizeof(data));
+	}
+
+	fout.close();
+
+	::MessageBox(NULL, "saved", "Info", MB_OK);
 }
 
 mainwndcls::mainwndcls()
@@ -81,6 +105,9 @@ LRESULT mainwnd::proc(HWND w, UINT m, WPARAM wp, LPARAM lp)
 
 				::DragQueryFile(d, i, path, sizeof(path));
 				::MessageBox(w, path, "drop", MB_OK);
+
+				exif e(path);
+				e.save(_T("test.jpg"));
 			}
 			::DragFinish(d);
 		}
