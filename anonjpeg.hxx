@@ -16,8 +16,14 @@ namespace anonjpeg {
 class exif {
 	std::ifstream fin;
 	bool valid;
-	std::list<std::ifstream::pos_type> segs;
+	struct segment {
+		unsigned short marker, size;
+		std::ifstream::pos_type pos;
+	};
+	std::list<segment *> segs;
 	std::ifstream::pos_type datap;
+	//
+	void parse(void);
 public:
 	exif(LPTSTR);
 	virtual ~exif();

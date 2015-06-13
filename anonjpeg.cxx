@@ -11,6 +11,18 @@ static unsigned short sb16(unsigned short x)
 }
 
 // EXIF
+void exif::parse()
+{
+	std::list<segment *>::iterator i;
+
+	for (i = segs.begin(); i != segs.end(); i++) {
+		segment *seg = *i;
+
+		if (seg->marker == 0xffe1) {
+		}
+	}
+}
+
 exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 {
 	valid = false;
@@ -25,6 +37,7 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 	// check APPx
 	for (;;) {
 		unsigned short marker, size;
+		segment *seg;
 		std::ifstream::pos_type pos;
 
 		pos = fin.tellg();
@@ -35,10 +48,15 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 		if (!(0xffe0 <= marker && marker <= 0xffef))
 			break;
 
-		segs.push_back(pos);
-
 		fin.read((char *)&size, sizeof(size));
 		size = sb16(size);
+
+		seg = new segment();
+		seg->marker = marker;
+		seg->size = size;
+		seg->pos = pos;
+
+		segs.push_back(seg);
 
 		// go to next segment
 		fin.seekg(size - 2, std::ios_base::cur);
@@ -47,13 +65,19 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 	fin.seekg(-2, std::ios_base::cur);
 	datap = fin.tellg();
 
-	valid = true;
+	parse();
 
-	::MessageBox(NULL, "valid", "info", MB_OK);
+	valid = true;
 }
 
 exif::~exif()
 {
+	std::list<segment *>::iterator i;
+
+	for (i = segs.begin(); i != segs.end(); i++) {
+		delete *i;
+	}
+
 	fin.close();
 }
 
@@ -81,7 +105,7 @@ void exif::save(LPTSTR path)
 
 	fout.close();
 
-	::MessageBox(NULL, "saved", "Info", MB_OK);
+	::MessageBox(NULL, path, "Saved", MB_OK);
 }
 
 mainwndcls::mainwndcls()
