@@ -62,6 +62,7 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 		fin.seekg(size - 2, std::ios_base::cur);
 	}
 
+	// keep data pointer
 	fin.seekg(-2, std::ios_base::cur);
 	datap = fin.tellg();
 
@@ -93,7 +94,7 @@ void exif::save(LPCTSTR path)
 	std::ofstream fout(path, std::ios::binary);
 	fout.write((char *)&soi, sizeof(soi));
 
-	// move fin to SOS
+	// move fin to data
 	fin.seekg(datap);
 
 	while (!fin.eof()) {
