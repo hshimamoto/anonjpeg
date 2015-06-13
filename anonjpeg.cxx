@@ -86,8 +86,3 @@ void mainapp::exit(void)
 }
 
 mainapp app;
-
-int hWinMain(HINST inst, LPTSTR line, int show)
-{
-	return 0;
-}
