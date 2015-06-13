@@ -17,6 +17,7 @@ class exif {
 	std::ifstream fin;
 	bool valid;
 	std::list<std::ifstream::pos_type> segs;
+	std::ifstream::pos_type datap;
 public:
 	exif(LPTSTR);
 	virtual ~exif();

@@ -44,6 +44,14 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 		fin.seekg(size - 2, std::ios_base::cur);
 	}
 
+	unsigned short sos;
+
+	fin.read((char *)&sos, sizeof(soi));
+	if (sos != 0xdaff)
+		return;
+
+	datap = fin.tellg();
+
 	valid = true;
 }
 
