@@ -5,6 +5,11 @@
 
 using namespace anonjpeg;
 
+static unsigned short sb16(unsigned short x)
+{
+	return ((x << 8) | ((x >> 8) & 0x00ff));
+}
+
 // EXIF
 exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 {
@@ -16,6 +21,28 @@ exif::exif(LPTSTR path) : fin(path, std::ios::binary)
 	fin.read((char *)&soi, sizeof(soi));
 	if (soi != 0xd8ff)
 		return;
+
+	// check APPx
+	for (;;) {
+		unsigned short marker, size;
+		std::ifstream::pos_type pos;
+
+		pos = fin.tellg();
+
+		fin.read((char *)&marker, sizeof(marker));
+		marker = sb16(marker);
+
+		if (!(0xffe0 <= marker && marker <= 0xffef))
+			break;
+
+		segs.push_back(pos);
+
+		fin.read((char *)&size, sizeof(size));
+		size = sb16(size);
+
+		// go to next segment
+		fin.seekg(size - 2, std::ios_base::cur);
+	}
 
 	valid = true;
 }
