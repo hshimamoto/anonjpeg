@@ -28,7 +28,7 @@ public:
 	exif(LPTSTR);
 	virtual ~exif();
 	//
-	void save(LPTSTR);
+	void save(LPCTSTR);
 };
 
 class mainwndcls : public hWin::cls {

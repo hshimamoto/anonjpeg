@@ -81,7 +81,7 @@ exif::~exif()
 	fin.close();
 }
 
-void exif::save(LPTSTR path)
+void exif::save(LPCTSTR path)
 {
 	if (!valid)
 		return;
