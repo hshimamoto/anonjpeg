@@ -1,0 +1,6 @@
+.*
+!.gitignore
+*.o
+anonjpeg.exe
+/hwin
+*.dll
