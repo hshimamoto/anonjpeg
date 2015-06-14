@@ -23,6 +23,7 @@ class exif {
 	std::list<segment *> segs;
 	std::ifstream::pos_type datap;
 	//
+	void parse_app1(segment *);
 	void parse(void);
 public:
 	exif(LPTSTR);

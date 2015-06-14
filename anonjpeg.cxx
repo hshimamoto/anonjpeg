@@ -11,6 +11,60 @@ static unsigned short sb16(unsigned short x)
 }
 
 // EXIF
+void exif::parse_app1(segment *seg)
+{
+	const char exifid[6] = { 0x45, 0x78, 0x69, 0x66, 0x00, 0x00 };
+	char *buf;
+
+	buf = new char[seg->size];
+
+	fin.seekg(seg->pos);
+	// skip marker
+	fin.seekg(2, std::ios_base::cur);
+
+	fin.read(buf, seg->size);
+
+	// check ID
+	for (int i = 0; i < 6; i++) {
+		if (buf[2 + i] != exifid[i])
+			goto out;
+	}
+
+	{
+	char *tiff = &buf[8];
+
+	// walk 0th IDF
+
+	unsigned short num_tags;
+
+	num_tags = sb16(*(unsigned short *)&tiff[8]);
+
+	char *ptr = &tiff[10];
+
+	for (int i = 0; i < num_tags; i++) {
+		//unsigned short tag, type;
+		unsigned int val;
+
+		//tag = sb16(*(unsigned short *)ptr);
+		ptr += 2;
+		//type = sb16(*(unsigned short *)ptr);
+		ptr += 2;
+		// num of value
+		ptr += 4;
+		// values
+		val = 0;
+		for (int k = 0; k < 4; k++) {
+			val <<= 8;
+			val |= (unsigned char)ptr[k];
+		}
+		ptr += 4;
+
+	}
+	}
+out:
+	delete[] buf;
+}
+
 void exif::parse()
 {
 	std::list<segment *>::iterator i;
@@ -19,6 +73,8 @@ void exif::parse()
 		segment *seg = *i;
 
 		if (seg->marker == 0xffe1) {
+			// check Exif Data
+			parse_app1(seg);
 		}
 	}
 }
